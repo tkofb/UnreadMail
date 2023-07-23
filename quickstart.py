@@ -12,8 +12,7 @@ from googleapiclient.errors import HttpError
 # If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
 
-
-def main():
+def obtainImportantUnreadMail():
     """Shows basic usage of the Gmail API.
     Lists the user's Gmail labels.
     """
@@ -39,29 +38,25 @@ def main():
         # Call the Gmail API
         service = build('gmail', 'v1', credentials=creds)
         updates = service.users().labels().get(userId = "me", id = "INBOX").execute()
-        important = service.users().labels().get(userId = "me", id = "UNREAD").execute()
+        important = service.users().labels().get(userId = "me", id = "IMPORTANT").execute()
         labels = service.users().labels().list(userId = "me").execute()
 
 
         # print(answer)
         # print(labels)
 
-        if not labels:
-            print('No labels found.')
-            return
-        print('Labels:')
-        for label in labels['labels']:
-            print(label['name'])
-
-        print(important)
-        print(updates)
-        print(len(important))
+        
+        return important["messagesUnread"]
 
         
 
     except HttpError as error:
         # TODO(developer) - Handle errors from gmail API.
         print(f'An error occurred: {error}')
+
+
+def main():
+    print(obtainImportantUnreadMail())
 
 
 if __name__ == '__main__':
