@@ -1,6 +1,7 @@
 from __future__ import print_function
 
 import os.path
+import requests
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -37,15 +38,26 @@ def main():
     try:
         # Call the Gmail API
         service = build('gmail', 'v1', credentials=creds)
-        results = service.users().labels().list(userId='me').execute()
-        labels = results.get('labels', [])
+        updates = service.users().labels().get(userId = "me", id = "INBOX").execute()
+        important = service.users().labels().get(userId = "me", id = "UNREAD").execute()
+        labels = service.users().labels().list(userId = "me").execute()
+
+
+        # print(answer)
+        # print(labels)
 
         if not labels:
             print('No labels found.')
             return
         print('Labels:')
-        for label in labels:
+        for label in labels['labels']:
             print(label['name'])
+
+        print(important)
+        print(updates)
+        print(len(important))
+
+        
 
     except HttpError as error:
         # TODO(developer) - Handle errors from gmail API.
